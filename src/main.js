@@ -8,14 +8,13 @@ async function run() {
   try {
     const commits = JSON.parse(core.getInput('semantic_commits'))
 
-    groupCommits(commits)
-      .then(mappings => generateChangelogString(mappings))
-      .then(changelog => {
-        console.log('changelog', changelog)
-        core.setOutput('changelog', changelog)
-      })
+    console.log('commits', commits)
+    const mappings = await groupCommits(commits)
+    console.log('mappings', mappings)
+    const changelog = await generateChangelogString(mappings)
+    console.log('Changelog', changelog)
+    core.setOutput('changelog', changelog)
   } catch (error) {
-    // Fail the workflow run if an error occurs
     core.setFailed(error.message)
   }
 }
