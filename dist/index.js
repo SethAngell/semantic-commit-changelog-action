@@ -2749,10 +2749,12 @@ async function groupCommits(commits) {
 
 async function generateChangelogString(sections) {
   const changelog_lines = []
+  console.log('Sections', sections)
+  console.log('typeof', sections)
 
   for (const key of commit_mappings.keys()) {
     console.log('Key: ', key)
-    const section = sections[key]
+    const section = sections.get(key)
     console.log('Section', section)
     if (section != null) {
       changelog_lines.push(section.header)
