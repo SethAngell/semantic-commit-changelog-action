@@ -2734,7 +2734,7 @@ async function groupCommits(commits) {
   console.log('parsed_commits', parsed_commits)
   console.log('typeof parsed commits', typeof parsed_commits)
 
-  for (const commit of commits) {
+  for (const commit of parsed_commits) {
     if (Boolean(commit.valid) !== true) continue
     const commit_type = commit.message.split(':')[0].toLocaleLowerCase()
     if (changelog_sections.get(commit_type)) {
