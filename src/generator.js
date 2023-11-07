@@ -23,8 +23,8 @@ async function groupCommits(commits) {
 async function generateChangelogString(sections) {
   const changelog_lines = []
 
-  console.log('Keys!', Object.keys(commit_mappings))
-  for (const key of Object.keys(commit_mappings)) {
+  console.log('Keys!', commit_mappings.keys())
+  for (const key of commit_mappings.keys()) {
     const section = sections.get(key)
     console.log('Section', section)
     if (section != null) {
