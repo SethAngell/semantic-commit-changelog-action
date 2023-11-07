@@ -31,7 +31,7 @@ async function generateChangelogString(sections) {
     console.log('Section', section)
     if (section != null) {
       changelog_lines.push(section.header)
-      changelog_lines.concat(section.items)
+      changelog_lines.push(...section.items)
     }
   }
 
