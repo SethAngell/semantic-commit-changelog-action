@@ -2799,7 +2799,7 @@ async function run() {
     groupCommits(commits)
       .then(mappings => generateChangelogString(mappings))
       .then(changelog => {
-        console.log(changelog)
+        console.log('changelog', changelog)
         core.setOutput('changelog', changelog)
       })
   } catch (error) {
