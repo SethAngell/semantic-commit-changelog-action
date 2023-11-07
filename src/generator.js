@@ -1,4 +1,4 @@
-export async function groupCommits(commits) {
+async function groupCommits(commits) {
   const changelog_sections = new Map()
 
   commits
@@ -20,7 +20,7 @@ export async function groupCommits(commits) {
   return changelog_sections
 }
 
-export async function generateChangelogString(sections) {
+async function generateChangelogString(sections) {
   const changelog_lines = []
 
   Object.keys(commit_mappings).forEach(key => {
@@ -38,7 +38,7 @@ function getCommitMapping(type) {
   return commit_mappings[type] ? commit_mappings[type] : 'fix'
 }
 
-export const commit_mappings = {
+const commit_mappings = {
   feat: '## New Features',
   fix: '## Bug Fixes',
   chore: '## Technical Tasks',
@@ -46,4 +46,10 @@ export const commit_mappings = {
   docs: '## Documentation',
   refactor: '## Refactors',
   test: '## Testing'
+}
+
+module.exports = {
+  commit_mappings,
+  generateChangelogString,
+  groupCommits
 }

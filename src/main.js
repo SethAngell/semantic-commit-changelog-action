@@ -1,5 +1,5 @@
 const core = require('@actions/core')
-import { groupCommits, generateChangelogString } from './generator'
+const { groupCommits, generateChangelogString } = require('./generator')
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
