@@ -4,7 +4,7 @@ async function groupCommits(commits) {
 
   for (const commit of parsed_commits) {
     if (Boolean(commit.valid) !== true) continue
-    const commit_type = commit.message.split(':')[0].toLocaleLowerCase()
+    const commit_type = extractCommitType(commit.message).toLocaleLowerCase()
     if (changelog_sections.get(commit_type)) {
       const section = changelog_sections.get(commit_type)
       section.items.push(commit.message)
@@ -34,8 +34,16 @@ async function generateChangelogString(sections) {
   return changelog_lines.join('\n')
 }
 
+function extractCommitType(branch) {
+  const re = /([a-zA-Z]*)(\(.*\))?:/gm
+  const matched_items = branch.match(re)
+  console.log(matched_items)
+  return matched_items[0]
+}
+
 function getCommitMapping(type) {
-  return commit_mappings[type] ? commit_mappings[type] : 'fix'
+  console.log('type', type)
+  return commit_mappings.get(type) != null ? commit_mappings.get(type) : 'fix'
 }
 
 const commit_mappings = new Map([
