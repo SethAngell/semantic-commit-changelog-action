@@ -2727,6 +2727,12 @@ exports["default"] = _default;
 
 async function groupCommits(commits) {
   const changelog_sections = new Map()
+  console.log('g_commits', commits)
+  console.log('typeof commits', typeof commits)
+
+  const parsed_commits = JSON.parse(commits)
+  console.log('parsed_commits', parsed_commits)
+  console.log('typeof parsed commits', typeof parsed_commits)
 
   for (const commit of commits) {
     if (Boolean(commit.valid) !== true) continue
