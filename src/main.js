@@ -1,24 +1,19 @@
 const core = require('@actions/core')
-const { wait } = require('./wait')
-
+import { groupCommits, generateChangelogString } from './generator'
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 async function run() {
   try {
-    const ms = core.getInput('milliseconds', { required: true })
+    const commits = JSON.parse(
+      core.getInput('semantic_commits')
+    )
 
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds ...`)
-
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
+    groupCommits(commits).then((mappings) => generateChangelogString(mappings)).then((changelog) => {
+      console.log(changelog);
+      core.setOutput('changelog', changelog)
+    })
   } catch (error) {
     // Fail the workflow run if an error occurs
     core.setFailed(error.message)

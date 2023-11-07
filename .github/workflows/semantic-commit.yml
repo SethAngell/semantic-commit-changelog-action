@@ -1,0 +1,24 @@
+name: Lint Commit Messages
+on: [pull_request]
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: wagoid/commitlint-github-action@v5
+        name: parse_commits
+        id: parse_commits
+        with:
+          failOnErrors: false
+      - name: Show results from JSON output
+        if: ${{ always() }}
+        run: echo ${{ toJSON(steps.parse_commits.outputs.results) }}
+      - name: Test Local Action
+        id: test-action
+        uses: ./
+        with:
+          semantic_commits: ${{ toJSON(steps.parse_commits.outputs.results) }}
+      - name: Print Output
+        id: output
+        run: echo "${{ steps.test-action.outputs.changelog }}"
