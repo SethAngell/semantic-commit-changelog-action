@@ -1,14 +1,10 @@
-
 export async function groupCommits(commits) {
-  const changelog_sections = new Map();
+  const changelog_sections = new Map()
 
-  
   commits
-    .filter((commit) => commit.valid)
-    .forEach((commit) => {
-      const commit_type = commit.message
-        .split(':')[0]
-        .toLocaleLowerCase()
+    .filter(commit => commit.valid)
+    .forEach(commit => {
+      const commit_type = commit.message.split(':')[0].toLocaleLowerCase()
       if (changelog_sections.get(commit_type)) {
         const section = changelog_sections.get(commit_type)
         section.items.push(commit.message)
@@ -24,12 +20,10 @@ export async function groupCommits(commits) {
   return changelog_sections
 }
 
-export async function generateChangelogString(
-  sections
-){
+export async function generateChangelogString(sections) {
   const changelog_lines = []
 
-  Object.keys(commit_mappings).forEach((key) => {
+  Object.keys(commit_mappings).forEach(key => {
     if (key in sections) {
       const section = sections.get(key)
       changelog_lines.push(section.header)
@@ -41,7 +35,6 @@ export async function generateChangelogString(
 }
 
 function getCommitMapping(type) {
-  
   return commit_mappings[type] ? commit_mappings[type] : 'fix'
 }
 

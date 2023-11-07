@@ -6,14 +6,14 @@ import { groupCommits, generateChangelogString } from './generator'
  */
 async function run() {
   try {
-    const commits = JSON.parse(
-      core.getInput('semantic_commits')
-    )
+    const commits = JSON.parse(core.getInput('semantic_commits'))
 
-    groupCommits(commits).then((mappings) => generateChangelogString(mappings)).then((changelog) => {
-      console.log(changelog);
-      core.setOutput('changelog', changelog)
-    })
+    groupCommits(commits)
+      .then(mappings => generateChangelogString(mappings))
+      .then(changelog => {
+        console.log(changelog)
+        core.setOutput('changelog', changelog)
+      })
   } catch (error) {
     // Fail the workflow run if an error occurs
     core.setFailed(error.message)

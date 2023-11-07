@@ -2722,30 +2722,82 @@ exports["default"] = _default;
 
 /***/ }),
 
-/***/ 713:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+/***/ 618:
+/***/ ((module, __webpack_exports__, __nccwpck_require__) => {
 
+"use strict";
+// ESM COMPAT FLAG
+__nccwpck_require__.r(__webpack_exports__);
+
+;// CONCATENATED MODULE: ./src/generator.js
+async function groupCommits(commits) {
+  const changelog_sections = new Map()
+
+  commits
+    .filter(commit => commit.valid)
+    .forEach(commit => {
+      const commit_type = commit.message.split(':')[0].toLocaleLowerCase()
+      if (changelog_sections.get(commit_type)) {
+        const section = changelog_sections.get(commit_type)
+        section.items.push(commit.message)
+      } else {
+        const section = {
+          header: getCommitMapping(commit_type),
+          items: [commit.message]
+        }
+        changelog_sections.set(commit_type, section)
+      }
+    })
+
+  return changelog_sections
+}
+
+async function generateChangelogString(sections) {
+  const changelog_lines = []
+
+  Object.keys(commit_mappings).forEach(key => {
+    if (key in sections) {
+      const section = sections.get(key)
+      changelog_lines.push(section.header)
+      changelog_lines.concat(section.items)
+    }
+  })
+
+  return changelog_lines.join('\n')
+}
+
+function getCommitMapping(type) {
+  return commit_mappings[type] ? commit_mappings[type] : 'fix'
+}
+
+const commit_mappings = {
+  feat: '## New Features',
+  fix: '## Bug Fixes',
+  chore: '## Technical Tasks',
+  ci: '## Pipeline Updates',
+  docs: '## Documentation',
+  refactor: '## Refactors',
+  test: '## Testing'
+}
+
+;// CONCATENATED MODULE: ./src/main.js
+/* module decorator */ module = __nccwpck_require__.hmd(module);
 const core = __nccwpck_require__(186)
-const { wait } = __nccwpck_require__(312)
-
+;
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 async function run() {
   try {
-    const ms = core.getInput('milliseconds', { required: true })
+    const commits = JSON.parse(core.getInput('semantic_commits'))
 
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds ...`)
-
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
+    groupCommits(commits)
+      .then(mappings => generateChangelogString(mappings))
+      .then(changelog => {
+        console.log(changelog)
+        core.setOutput('changelog', changelog)
+      })
   } catch (error) {
     // Fail the workflow run if an error occurs
     core.setFailed(error.message)
@@ -2755,30 +2807,6 @@ async function run() {
 module.exports = {
   run
 }
-
-
-/***/ }),
-
-/***/ 312:
-/***/ ((module) => {
-
-/**
- * Wait for a number of milliseconds.
- *
- * @param {number} milliseconds The number of milliseconds to wait.
- * @returns {Promise<string>} Resolves with 'done!' after the wait is over.
- */
-async function wait(milliseconds) {
-  return new Promise(resolve => {
-    if (isNaN(milliseconds)) {
-      throw new Error('milliseconds not a number')
-    }
-
-    setTimeout(() => resolve('done!'), milliseconds)
-  })
-}
-
-module.exports = { wait }
 
 
 /***/ }),
@@ -2885,8 +2913,8 @@ module.exports = require("util");
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
+/******/ 			id: moduleId,
+/******/ 			loaded: false,
 /******/ 			exports: {}
 /******/ 		};
 /******/ 	
@@ -2899,11 +2927,40 @@ module.exports = require("util");
 /******/ 			if(threw) delete __webpack_module_cache__[moduleId];
 /******/ 		}
 /******/ 	
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/harmony module decorator */
+/******/ 	(() => {
+/******/ 		__nccwpck_require__.hmd = (module) => {
+/******/ 			module = Object.create(module);
+/******/ 			if (!module.children) module.children = [];
+/******/ 			Object.defineProperty(module, 'exports', {
+/******/ 				enumerable: true,
+/******/ 				set: () => {
+/******/ 					throw new Error('ES Modules may not assign module.exports or exports.*, Use ESM export syntax, instead: ' + module.id);
+/******/ 				}
+/******/ 			});
+/******/ 			return module;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__nccwpck_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
@@ -2915,7 +2972,7 @@ var __webpack_exports__ = {};
 /**
  * The entrypoint for the action.
  */
-const { run } = __nccwpck_require__(713)
+const { run } = __nccwpck_require__(618)
 
 run()
 
