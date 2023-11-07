@@ -24,8 +24,9 @@ async function generateChangelogString(sections) {
   const changelog_lines = []
 
   for (const key of Object.keys(commit_mappings)) {
-    if (key in sections) {
-      const section = sections.get(key)
+    const section = sections.get(key)
+    console.log('Section', section)
+    if (section != null) {
       changelog_lines.push(section.header)
       changelog_lines.concat(section.items)
     }
