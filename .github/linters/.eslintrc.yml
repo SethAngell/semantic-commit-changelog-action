@@ -47,5 +47,6 @@ rules:
     'no-unused-vars': 'off',
     'prettier/prettier': 'error',
     'semi': 'off',
-    'github/array-foreach': 'off'
+    'github/array-foreach': 'off',
+    'eqeqeq': 'off'
   }
