@@ -7,12 +7,8 @@ const { groupCommits, generateChangelogString } = require('./generator')
 async function run() {
   try {
     const commits = JSON.parse(core.getInput('semantic_commits'))
-
-    console.log('commits', commits)
     const mappings = await groupCommits(commits)
-    console.log('mappings', mappings)
     const changelog = await generateChangelogString(mappings)
-    console.log('Changelog', changelog)
     core.setOutput('changelog', changelog)
   } catch (error) {
     core.setFailed(error.message)

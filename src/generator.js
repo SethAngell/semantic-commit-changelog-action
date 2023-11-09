@@ -22,44 +22,36 @@ async function groupCommits(commits) {
 
 async function generateChangelogString(sections) {
   const changelog_lines = []
-  console.log('Sections', sections)
-  console.log('typeof', sections)
 
   for (const key of commit_mappings.keys()) {
-    console.log('Key: ', key)
     const section = sections.get(key)
-    console.log('Section', section)
     if (section != null) {
       changelog_lines.push(section.header)
       changelog_lines.push(...section.items)
     }
   }
-
   return changelog_lines.join('\n')
 }
 
 function extractCommitType(branch) {
   const re = /(?<type>[a-zA-Z]*)(\(.*\))?:/gm
   const all_groups = re.exec(branch).groups
-  console.log('all_groups', all_groups)
   const type = all_groups['type'] != null ? all_groups['type'] : 'fix'
-  console.log('type', type)
   return type.toLocaleLowerCase()
 }
 
 function getCommitMapping(type) {
-  console.log('type', type)
   return commit_mappings.get(type) != null ? commit_mappings.get(type) : 'fix'
 }
 
 const commit_mappings = new Map([
-  ['feat', '## New Features'],
-  ['fix', '## Bug Fixes'],
-  ['chore', '## Technical Tasks'],
-  ['ci', '## Pipeline Updates'],
-  ['docs', '## Documentation'],
-  ['refactor', '## Refactors'],
-  ['test', '## Testing']
+  ['feat', '\n\n## New Features\n'],
+  ['fix', '\n\n## Bug Fixes\n'],
+  ['chore', '\n\n## Technical Tasks\n'],
+  ['ci', '\n\n## Pipeline Updates\n'],
+  ['docs', '\n\n## Documentation\n'],
+  ['refactor', '\n\n## Refactors\n'],
+  ['test', '\n\n## Testing\n']
 ])
 
 module.exports = {

@@ -1,36 +1,44 @@
-/**
- * Unit tests for the action's main functionality, src/main.ts
- *
- * These should be run as if the action was called from a workflow.
- * Specifically, the inputs listed in `action.yml` should be set as environment
- * variables following the pattern `INPUT_<INPUT_NAME>`.
- */
 const core = require('@actions/core')
 const main = require('../src/main')
 
 // Mock the GitHub Actions core library
-const debugMock = jest.spyOn(core, 'debug').mockImplementation()
 const getInputMock = jest.spyOn(core, 'getInput').mockImplementation()
 const setFailedMock = jest.spyOn(core, 'setFailed').mockImplementation()
 const setOutputMock = jest.spyOn(core, 'setOutput').mockImplementation()
 
 // Mock the action's main function
 const runMock = jest.spyOn(main, 'run')
+const mockChangelog = '# Changelog'
+jest.mock('../src/generator', () => ({
+  groupCommits: jest.fn().mockImplementation(() => {
+    return new Map()
+  }),
+  generateChangelogString: jest.fn().mockImplementation(() => {
+    return mockChangelog
+  })
+}))
 
-// Other utilities
-const timeRegex = /^\d{2}:\d{2}:\d{2}/
+const singleCommit = JSON.stringify([
+  {
+    hash: 'dc638790213bc16f081fa6b78bb9eaafcb564abe',
+    message: 'feat(auth): Added SSO support for Azure',
+    valid: true,
+    errors: [],
+    warnings: []
+  }
+])
 
 describe('action', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
-  it('sets the time output', async () => {
+  it('sets the changelog output', async () => {
     // Set the action's inputs as return values from core.getInput()
     getInputMock.mockImplementation(name => {
       switch (name) {
-        case 'milliseconds':
-          return '500'
+        case 'semantic_commits':
+          return singleCommit
         default:
           return ''
       }
@@ -39,50 +47,18 @@ describe('action', () => {
     await main.run()
     expect(runMock).toHaveReturned()
 
-    // Verify that all of the core library functions were called correctly
-    expect(debugMock).toHaveBeenNthCalledWith(1, 'Waiting 500 milliseconds ...')
-    expect(debugMock).toHaveBeenNthCalledWith(
-      2,
-      expect.stringMatching(timeRegex)
-    )
-    expect(debugMock).toHaveBeenNthCalledWith(
-      3,
-      expect.stringMatching(timeRegex)
-    )
     expect(setOutputMock).toHaveBeenNthCalledWith(
       1,
-      'time',
-      expect.stringMatching(timeRegex)
+      'changelog',
+      expect.stringMatching(mockChangelog)
     )
   })
-
-  it('sets a failed status', async () => {
-    // Set the action's inputs as return values from core.getInput()
-    getInputMock.mockImplementation(name => {
-      switch (name) {
-        case 'milliseconds':
-          return 'this is not a number'
-        default:
-          return ''
-      }
-    })
-
-    await main.run()
-    expect(runMock).toHaveReturned()
-
-    // Verify that all of the core library functions were called correctly
-    expect(setFailedMock).toHaveBeenNthCalledWith(
-      1,
-      'milliseconds not a number'
-    )
-  })
-
   it('fails if no input is provided', async () => {
     // Set the action's inputs as return values from core.getInput()
     getInputMock.mockImplementation(name => {
       switch (name) {
-        case 'milliseconds':
-          throw new Error('Input required and not supplied: milliseconds')
+        case 'semantic_commits':
+          throw new Error('no input supplied')
         default:
           return ''
       }
@@ -92,9 +68,6 @@ describe('action', () => {
     expect(runMock).toHaveReturned()
 
     // Verify that all of the core library functions were called correctly
-    expect(setFailedMock).toHaveBeenNthCalledWith(
-      1,
-      'Input required and not supplied: milliseconds'
-    )
+    expect(setFailedMock).toHaveBeenNthCalledWith(1, 'no input supplied')
   })
 })

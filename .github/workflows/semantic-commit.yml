@@ -2,23 +2,20 @@ name: Lint Commit Messages
 on: [pull_request]
 
 jobs:
-  commitlint:
+  lint-commits:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: wagoid/commitlint-github-action@v5
-        name: parse_commits
+        name: Parse Commits
         id: parse_commits
         with:
           failOnErrors: false
-      - name: Show results from JSON output
-        if: ${{ always() }}
-        run: echo ${{ toJSON(steps.parse_commits.outputs.results) }}
-      - name: Test Local Action
-        id: test-action
+      - name: Generate Changelog
+        id: changelog-generator
         uses: ./
         with:
           semantic_commits: ${{ toJSON(steps.parse_commits.outputs.results) }}
-      - name: Print Output
+      - name: Print Results
         id: output
-        run: echo "${{ steps.test-action.outputs.changelog }}"
+        run: echo "${{ steps.changelog-generator.outputs.changelog }}"
