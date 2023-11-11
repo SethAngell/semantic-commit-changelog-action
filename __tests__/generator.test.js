@@ -93,38 +93,38 @@ describe('Within generators.js', () => {
       const version_type = await determineHowToVersion(commits)
 
       expect(version_type).toBe('MAJOR')
-    }),
-      it('should return MAJOR when a commit type and/or scope is followed by an exclamation point', async () => {
-        const commits = [
-          {
-            hash: 'dc638790213bc16f081fa6b78bb9eaafcb564abe',
-            message: 'feat!: Added SSO support for Azure',
-            valid: true,
-            errors: [],
-            warnings: []
-          },
-          {
-            hash: 'dc638790213bc16f081fa6b78bb9eaafcb564abe',
-            message: 'fix(auth): abstracted SSO and Email auth interface',
-            valid: true,
-            errors: [],
-            warnings: []
-          },
-          {
-            hash: 'dc638790213bc16f081fa6b78bb9eaafcb564abe',
-            message: 'feat(auth)!: Added SSO support for Azure',
-            valid: true,
-            errors: [],
-            warnings: []
-          }
-        ]
+    })
+    it('should return MAJOR when a commit type and/or scope is followed by an exclamation point', async () => {
+      const commits = [
+        {
+          hash: 'dc638790213bc16f081fa6b78bb9eaafcb564abe',
+          message: 'feat!: Added SSO support for Azure',
+          valid: true,
+          errors: [],
+          warnings: []
+        },
+        {
+          hash: 'dc638790213bc16f081fa6b78bb9eaafcb564abe',
+          message: 'fix(auth): abstracted SSO and Email auth interface',
+          valid: true,
+          errors: [],
+          warnings: []
+        },
+        {
+          hash: 'dc638790213bc16f081fa6b78bb9eaafcb564abe',
+          message: 'feat(auth)!: Added SSO support for Azure',
+          valid: true,
+          errors: [],
+          warnings: []
+        }
+      ]
 
-        const unscoped_type = await determineHowToVersion(commits.slice(2))
-        const scoped_type = await determineHowToVersion(commits.slice(-2))
+      const unscoped_type = await determineHowToVersion(commits.slice(2))
+      const scoped_type = await determineHowToVersion(commits.slice(-2))
 
-        expect(unscoped_type).toBe('MAJOR')
-        expect(scoped_type).toBe('MAJOR')
-      })
+      expect(unscoped_type).toBe('MAJOR')
+      expect(scoped_type).toBe('MAJOR')
+    })
     it('should return MINOR when a commit contains feat or refactor tags', async () => {
       const commits = [
         {
@@ -176,27 +176,27 @@ describe('Within generators.js', () => {
 
       const patch_type = await determineHowToVersion(commits)
       expect(patch_type).toBe('PATCH')
-    }),
-      it('should gracefully handle stringifed input', async () => {
-        const commits = JSON.stringify([
-          {
-            hash: 'dc638790213bc16f081fa6b78bb9eaafcb564abe',
-            message: 'fix(auth): added Azure specific config',
-            valid: true,
-            errors: [],
-            warnings: []
-          },
-          {
-            hash: 'dc638790213bc16f081fa6b78bb9eaafcb564abe',
-            message: 'fix(auth): abstracted SSO and Email auth interface',
-            valid: true,
-            errors: [],
-            warnings: []
-          }
-        ])
+    })
+    it('should gracefully handle stringifed input', async () => {
+      const commits = JSON.stringify([
+        {
+          hash: 'dc638790213bc16f081fa6b78bb9eaafcb564abe',
+          message: 'fix(auth): added Azure specific config',
+          valid: true,
+          errors: [],
+          warnings: []
+        },
+        {
+          hash: 'dc638790213bc16f081fa6b78bb9eaafcb564abe',
+          message: 'fix(auth): abstracted SSO and Email auth interface',
+          valid: true,
+          errors: [],
+          warnings: []
+        }
+      ])
 
-        const patch_type = await determineHowToVersion(commits)
-        expect(patch_type).toBe('PATCH')
-      })
+      const patch_type = await determineHowToVersion(commits)
+      expect(patch_type).toBe('PATCH')
+    })
   })
 })

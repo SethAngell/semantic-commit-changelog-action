@@ -55,13 +55,14 @@ async function generateChangelogString(sections) {
  * @returns {String} One of the following 3 values, representing types of versions: MAJOR, MINOR, PATCH.
  */
 async function determineHowToVersion(commits) {
-  major = minor = false
+  let major = false
+  let minor = false
 
   if (!(commits instanceof Object)) {
     commits = JSON.parse(commits)
   }
 
-  for (commit of commits) {
+  for (const commit of commits) {
     if (testForBreakingChange(commit.message)) {
       major = true
     }
@@ -82,7 +83,7 @@ async function determineHowToVersion(commits) {
 function extractCommitType(branch) {
   const re = /(?<type>[\w-]*)(\(.*\))?:/gm
   const all_groups = re.exec(branch).groups
-  raw_type = all_groups['type']
+  const raw_type = all_groups['type']
   const type = raw_type != null ? raw_type.toLocaleLowerCase() : 'fix'
   return commit_mappings.get(type) != null ? type : 'fix'
 }
