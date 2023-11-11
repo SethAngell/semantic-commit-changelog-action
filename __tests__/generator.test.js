@@ -92,7 +92,7 @@ describe('Within generators.js', () => {
 
       const version_type = await determineHowToVersion(commits)
 
-      expect(version_type).toBe('MAJOR')
+      expect(version_type).toBe('major')
     })
     it('should return MAJOR when a commit type and/or scope is followed by an exclamation point', async () => {
       const commits = [
