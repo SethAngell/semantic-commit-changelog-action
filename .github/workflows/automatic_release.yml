@@ -1,9 +1,13 @@
-name: Lint Commit Messages
-on: [pull_request]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  lint-commits:
+  release-on-push:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
       - uses: wagoid/commitlint-github-action@v5
@@ -16,6 +20,7 @@ jobs:
         uses: ./
         with:
           semantic_commits: ${{ toJSON(steps.parse_commits.outputs.results) }}
-      - name: Print Results
-        id: output
-        run: echo "${{ steps.changelog-generator.outputs.changelog }}"
+      - uses: rymndhng/release-on-push-action@master
+        with:
+          bump_version_scheme: "${{ steps.changelog-generator.outputs.type }}"
+          release_body: "${{ steps.changelog-generator.outputs.changelog }}"

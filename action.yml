@@ -1,18 +1,24 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Semantic Commit Changelog Generator'
+description:
+  'Given an array of semantic commits from commit lint, groups and generates a
+  changelog in the markdown format.'
+author: 'Seth Angell'
 
-# Define your inputs here.
+branding:
+  icon: 'scissors'
+  color: 'blue'
+
 inputs:
-  milliseconds:
-    description: 'Your input description here'
+  semantic_commits:
+    description: 'An array of semantic commit messages'
     required: true
-    default: '1000'
+    default: '[]'
 
-# Define your outputs here.
 outputs:
-  time:
-    description: 'Your output description here'
+  changelog:
+    description: 'A markdown formatted changelog of your commits.'
+  type:
+    description: 'What kind of versioning action this should trigger: major, minor, or patch.'
 
 runs:
   using: node20

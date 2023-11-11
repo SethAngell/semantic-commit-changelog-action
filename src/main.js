@@ -1,21 +1,22 @@
 const core = require('@actions/core')
-import { groupCommits, generateChangelogString } from './generator'
+const {
+  groupCommits,
+  generateChangelogString,
+  determineHowToVersion
+} = require('./generator')
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 async function run() {
   try {
-    const commits = JSON.parse(
-      core.getInput('semantic_commits')
-    )
-
-    groupCommits(commits).then((mappings) => generateChangelogString(mappings)).then((changelog) => {
-      console.log(changelog);
-      core.setOutput('changelog', changelog)
-    })
+    const commits = JSON.parse(core.getInput('semantic_commits'))
+    const mappings = await groupCommits(commits)
+    const type = await determineHowToVersion(commits)
+    const changelog = await generateChangelogString(mappings)
+    core.setOutput('changelog', changelog)
+    core.setOutput('type', type)
   } catch (error) {
-    // Fail the workflow run if an error occurs
     core.setFailed(error.message)
   }
 }
