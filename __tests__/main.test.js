@@ -15,6 +15,9 @@ jest.mock('../src/generator', () => ({
   }),
   generateChangelogString: jest.fn().mockImplementation(() => {
     return mockChangelog
+  }),
+  determineHowToVersion: jest.fn().mockImplementation(() => {
+    return 'MAJOR'
   })
 }))
 

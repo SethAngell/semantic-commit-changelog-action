@@ -2725,6 +2725,13 @@ exports["default"] = _default;
 /***/ 941:
 /***/ ((module) => {
 
+/**
+ * Given a collection of semantic commits, generates a map grouped by commit type.
+ *
+ * @param {List} commits A list of Semantic Commit objects according to the commit lint format.
+ *
+ * @returns {Map} Commits mapped by type.
+ */
 async function groupCommits(commits) {
   const changelog_sections = new Map()
   const parsed_commits = JSON.parse(commits)
@@ -2747,6 +2754,13 @@ async function groupCommits(commits) {
   return changelog_sections
 }
 
+/**
+ * Given a map of semantic commits, generates a valid changelog with commit types grouped under section headers.
+ *
+ * @param {Map} sections A map of semantic commits, grouped by their type.
+ *
+ * @returns {String} A markdown valid changelog.
+ */
 async function generateChangelogString(sections) {
   const changelog_lines = []
 
@@ -2760,11 +2774,57 @@ async function generateChangelogString(sections) {
   return changelog_lines.join('\n')
 }
 
+/**
+ *  Given a collection of semantic commit messages, determines what the next version should be.
+ *
+ * @param {List} commits A list of Semantic Commit objects according to the commit lint format.
+ *
+ * @returns {String} One of the following 3 values, representing types of versions: MAJOR, MINOR, PATCH.
+ */
+async function determineHowToVersion(commits) {
+  major = minor = false
+
+  if (!(commits instanceof Object)) {
+    commits = JSON.parse(commits)
+  }
+
+  for (commit of commits) {
+    if (testForBreakingChange(commit.message)) {
+      major = true
+    }
+    if (testForMinorChange(commit.message)) {
+      minor = true
+    }
+  }
+
+  if (major) {
+    return 'MAJOR'
+  } else if (minor) {
+    return 'MINOR'
+  } else {
+    return 'PATCH'
+  }
+}
+
 function extractCommitType(branch) {
-  const re = /(?<type>[a-zA-Z]*)(\(.*\))?:/gm
+  const re = /(?<type>[\w-]*)(\(.*\))?:/gm
   const all_groups = re.exec(branch).groups
-  const type = all_groups['type'] != null ? all_groups['type'] : 'fix'
-  return type.toLocaleLowerCase()
+  raw_type = all_groups['type']
+  const type = raw_type != null ? raw_type.toLocaleLowerCase() : 'fix'
+  return commit_mappings.get(type) != null ? type : 'fix'
+}
+
+function testForBreakingChange(branch) {
+  const header_re = /[a-zA-Z]*(\(.*\))?!:/gm
+  const footer_re = /\nBREAKING CHANGES:/gm
+
+  return header_re.test(branch) || footer_re.test(branch)
+}
+
+function testForMinorChange(branch) {
+  const minor_re = /(feat|refactor)(\(.*\))?:/gm
+
+  return minor_re.test(branch)
 }
 
 function getCommitMapping(type) {
@@ -2784,7 +2844,8 @@ const commit_mappings = new Map([
 module.exports = {
   commit_mappings,
   generateChangelogString,
-  groupCommits
+  groupCommits,
+  determineHowToVersion
 }
 
 
@@ -2794,7 +2855,11 @@ module.exports = {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(186)
-const { groupCommits, generateChangelogString } = __nccwpck_require__(941)
+const {
+  groupCommits,
+  generateChangelogString,
+  determineHowToVersion
+} = __nccwpck_require__(941)
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -2803,8 +2868,10 @@ async function run() {
   try {
     const commits = JSON.parse(core.getInput('semantic_commits'))
     const mappings = await groupCommits(commits)
+    const type = await determineHowToVersion(commits)
     const changelog = await generateChangelogString(mappings)
     core.setOutput('changelog', changelog)
+    core.setOutput('type', type)
   } catch (error) {
     core.setFailed(error.message)
   }
