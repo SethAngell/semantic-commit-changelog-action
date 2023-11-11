@@ -122,8 +122,8 @@ describe('Within generators.js', () => {
       const unscoped_type = await determineHowToVersion(commits.slice(2))
       const scoped_type = await determineHowToVersion(commits.slice(-2))
 
-      expect(unscoped_type).toBe('MAJOR')
-      expect(scoped_type).toBe('MAJOR')
+      expect(unscoped_type).toBe('major')
+      expect(scoped_type).toBe('major')
     })
     it('should return MINOR when a commit contains feat or refactor tags', async () => {
       const commits = [
@@ -153,8 +153,8 @@ describe('Within generators.js', () => {
       const feat_type = await determineHowToVersion(commits.slice(2))
       const refactor_type = await determineHowToVersion(commits.slice(-2))
 
-      expect(feat_type).toBe('MINOR')
-      expect(refactor_type).toBe('MINOR')
+      expect(feat_type).toBe('minor')
+      expect(refactor_type).toBe('minor')
     })
     it('should return PATCH when no feat or refactor tags are present', async () => {
       const commits = [
@@ -175,7 +175,7 @@ describe('Within generators.js', () => {
       ]
 
       const patch_type = await determineHowToVersion(commits)
-      expect(patch_type).toBe('PATCH')
+      expect(patch_type).toBe('patch')
     })
     it('should gracefully handle stringifed input', async () => {
       const commits = JSON.stringify([
@@ -196,7 +196,7 @@ describe('Within generators.js', () => {
       ])
 
       const patch_type = await determineHowToVersion(commits)
-      expect(patch_type).toBe('PATCH')
+      expect(patch_type).toBe('patch')
     })
   })
 })

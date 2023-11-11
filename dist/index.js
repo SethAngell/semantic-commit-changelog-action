@@ -556,8 +556,8 @@ class OidcClient {
             const res = yield httpclient
                 .getJson(id_token_url)
                 .catch(error => {
-                throw new Error(`Failed to get ID Token. \n 
-        Error Code : ${error.statusCode}\n 
+                throw new Error(`Failed to get ID Token. \n
+        Error Code : ${error.statusCode}\n
         Error Message: ${error.message}`);
             });
             const id_token = (_a = res.result) === null || _a === void 0 ? void 0 : _a.value;
@@ -2779,16 +2779,17 @@ async function generateChangelogString(sections) {
  *
  * @param {List} commits A list of Semantic Commit objects according to the commit lint format.
  *
- * @returns {String} One of the following 3 values, representing types of versions: MAJOR, MINOR, PATCH.
+ * @returns {String} One of the following 3 values, representing types of versions: major, minor, and patch
  */
 async function determineHowToVersion(commits) {
-  major = minor = false
+  let major = false
+  let minor = false
 
   if (!(commits instanceof Object)) {
     commits = JSON.parse(commits)
   }
 
-  for (commit of commits) {
+  for (const commit of commits) {
     if (testForBreakingChange(commit.message)) {
       major = true
     }
@@ -2798,18 +2799,18 @@ async function determineHowToVersion(commits) {
   }
 
   if (major) {
-    return 'MAJOR'
+    return 'major'
   } else if (minor) {
-    return 'MINOR'
+    return 'minor'
   } else {
-    return 'PATCH'
+    return 'patch'
   }
 }
 
 function extractCommitType(branch) {
   const re = /(?<type>[\w-]*)(\(.*\))?:/gm
   const all_groups = re.exec(branch).groups
-  raw_type = all_groups['type']
+  const raw_type = all_groups['type']
   const type = raw_type != null ? raw_type.toLocaleLowerCase() : 'fix'
   return commit_mappings.get(type) != null ? type : 'fix'
 }
@@ -2976,7 +2977,7 @@ module.exports = require("util");
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
-/******/ 	
+/******/
 /******/ 	// The require function
 /******/ 	function __nccwpck_require__(moduleId) {
 /******/ 		// Check if module is in cache
@@ -2990,7 +2991,7 @@ module.exports = require("util");
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
-/******/ 	
+/******/
 /******/ 		// Execute the module function
 /******/ 		var threw = true;
 /******/ 		try {
@@ -2999,16 +3000,16 @@ module.exports = require("util");
 /******/ 		} finally {
 /******/ 			if(threw) delete __webpack_module_cache__[moduleId];
 /******/ 		}
-/******/ 	
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/ 	
+/******/
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat */
-/******/ 	
+/******/
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
-/******/ 	
+/******/
 /************************************************************************/
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.

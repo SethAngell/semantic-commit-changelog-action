@@ -1,0 +1,26 @@
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release-on-push:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: wagoid/commitlint-github-action@v5
+        name: Parse Commits
+        id: parse_commits
+        with:
+          failOnErrors: false
+      - name: Generate Changelog
+        id: changelog-generator
+        uses: ./
+        with:
+          semantic_commits: ${{ toJSON(steps.parse_commits.outputs.results) }}
+      - uses: rymndhng/release-on-push-action@master
+        with:
+          bump_version_scheme: "${{ steps.changelog-generator.outputs.type }}"
+          release_body: "${{ steps.changelog-generator.outputs.changelog }}"

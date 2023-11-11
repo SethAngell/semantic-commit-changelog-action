@@ -52,7 +52,7 @@ async function generateChangelogString(sections) {
  *
  * @param {List} commits A list of Semantic Commit objects according to the commit lint format.
  *
- * @returns {String} One of the following 3 values, representing types of versions: MAJOR, MINOR, PATCH.
+ * @returns {String} One of the following 3 values, representing types of versions: major, minor, and patch
  */
 async function determineHowToVersion(commits) {
   let major = false
@@ -72,11 +72,11 @@ async function determineHowToVersion(commits) {
   }
 
   if (major) {
-    return 'MAJOR'
+    return 'major'
   } else if (minor) {
-    return 'MINOR'
+    return 'minor'
   } else {
-    return 'PATCH'
+    return 'patch'
   }
 }
 

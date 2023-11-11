@@ -18,7 +18,7 @@ outputs:
   changelog:
     description: 'A markdown formatted changelog of your commits.'
   type:
-    description: 'What kind of versioning action this should trigger: MAJOR, MINOR, or PATCH.'
+    description: 'What kind of versioning action this should trigger: major, minor, or patch.'
 
 runs:
   using: node20
